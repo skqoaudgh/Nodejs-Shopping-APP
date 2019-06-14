@@ -33,6 +33,9 @@ var form = document.getElementById('checkout-form');
 form.addEventListener('submit', function(event) {
     event.preventDefault();
 
+    var btn = document.getElementById('btn');
+    btn.disabled = 'disabled';
+
     stripe.createToken(card).then(function(result) {
         if (result.error) {
             // Inform the customer that there was an error.
@@ -46,8 +49,6 @@ form.addEventListener('submit', function(event) {
 });
 
 function stripeTokenHandler(token) {
-    console.log('1');
-    
     // Insert the token ID into the form so it gets submitted to the server
     var form = document.getElementById('checkout-form');
     var hiddenInput = document.createElement('input');

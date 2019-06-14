@@ -5,9 +5,10 @@
         <form action="/checkout" method="post" id="checkout-form">
             <div id="card-element"></div>
             <div id="charge-error" role="alert"></div>
+            <div id="charge-error2" {{#if noErrors}}hidden{{/if}}>{{ errMsg }}</div>
+            <br>
+            <button id="btn" type="submit" class="btn btn-success">Buy now</button>           
         </form>
-        <br>
-        <button type="submit" class="btn btn-success">Buy now</button>
     </div>
 </div>
 
