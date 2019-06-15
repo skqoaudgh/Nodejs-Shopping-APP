@@ -34,9 +34,14 @@ form.addEventListener('submit', function(event) {
     event.preventDefault();
 
     var btn = document.getElementById('btn');
+    var name = document.getElementById('name');
+    var address = document.getElementById('address');
     btn.disabled = 'disabled';
 
-    stripe.createToken(card).then(function(result) {
+    stripe.createToken(card, {
+      name: name.value,
+      address_line1: address.value
+    }).then(function(result) {
         if (result.error) {
             // Inform the customer that there was an error.
             var errorElement = document.getElementById('charge-error');
