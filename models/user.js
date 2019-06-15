@@ -1,9 +1,9 @@
-var mongoose = require('mongoose');
-var bcrypt = require('bcrypt');
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
-var Schema = mongoose.Schema;
+const Schema = mongoose.Schema;
 
-var userSchema = new Schema({
+let userSchema = new Schema({
     email: {
         type: String,
         required: true
@@ -14,12 +14,12 @@ var userSchema = new Schema({
     }
 });
 
-userSchema.methods.encryptPassword = function(password) {
-    return bcrypt.hashSync(password, bcrypt.genSaltSync(5), null);
+userSchema.methods.encryptPassword = async (password) => {
+    return await bcrypt.hashSync(password, bcrypt.genSaltSync(5), null);
 };
 
-userSchema.methods.validPassword = function(password) {
-    return bcrypt.compareSync(password, this.password);
+userSchema.methods.validPassword = async function(password) {
+    return await bcrypt.compareSync(password, this.password);
 };
 
 module.exports = mongoose.model('User', userSchema);

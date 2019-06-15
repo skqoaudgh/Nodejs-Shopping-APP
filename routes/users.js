@@ -1,48 +1,63 @@
-var express = require('express');
-var router = express.Router();
-var csrf = require('csurf');
-var passport = require('passport');
+const express = require('express');
+const router = express.Router();
+const csrf = require('csurf');
+const passport = require('passport');
 
-var Order = require('../models/order');
-var Cart = require('../models/cart');
+const Order = require('../models/order');
+const Cart = require('../models/cart');
 
-var csrfProtection = csrf();
+const csrfProtection = csrf();
 router.use(csrfProtection);
 
-router.get('/profile', isLoggedIn, function(req, res, next) {
-  Order.find({user: req.user}, function(err, orders) {
-    if(err) {
-      return res.write('Error!');
-    }
-    var cart;
+isLoggedIn = (req, res, next) => {
+  if(req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect('/');
+}
+
+notLoggedIn = (req, res, next) => {
+  if(!req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect('/');
+}
+
+router.get('/profile', isLoggedIn, async (req, res, next) => {
+  try {
+    const orders = await Order.find({user: req.user});
+    let cart;
     orders.forEach(function(order) {
       cart = new Cart(order.cart);
       order.items = cart.generateArray();
     });
-    res.render('user/profile', {orders: orders});
-  });
+    res.render('user/profile', {orders: orders});    
+  }
+  catch(err) {
+    return res.write('Error!');
+  }
 });
 
-router.get('/logout', isLoggedIn, function(req, res, next) {
+router.get('/logout', isLoggedIn, (req, res, next) => {
   req.logout();
   res.redirect('/');
 });
 
-router.use('/', notLoggedIn, function(req, res, next) {
+router.use('/', notLoggedIn, (req, res, next) => {
   next();
 });
 
-router.get('/signup', function(req, res, next) {
-  var messages = req.flash('error');
+router.get('/signup', (req, res, next) => {
+  const messages = req.flash('error');
   res.render('user/signup', {csrfToken: req.csrfToken(), messages: messages, hasErrors: messages.length > 0})
 });
 
 router.post('/signup', passport.authenticate('local.signup', {
   failureRedirect: '/user/signup',
   failureFlash: true
-}), function(req, res, next) {
+}), (req, res, next) => {
   if(req.session.oldUrl) {
-    var oldUrl = req.session.oldUrl;
+    const oldUrl = req.session.oldUrl;
     req.session.oldUrl = null;
     res.redirect(oldUrl);
   }
@@ -51,17 +66,17 @@ router.post('/signup', passport.authenticate('local.signup', {
   }
 });
 
-router.get('/signin', function(req, res, next) {
-  var messages = req.flash('error');
+router.get('/signin', (req, res, next) => {
+  const messages = req.flash('error');
   res.render('user/signin', {csrfToken: req.csrfToken(), messages: messages, hasErrors: messages.length > 0})
 });
 
 router.post('/signin', passport.authenticate('local.signin', {
   failureRedirect: '/user/signin',
   failureFlash: true 
-}), function(req, res, next) {
+}), (req, res, next) => {
   if(req.session.oldUrl) {
-    var oldUrl = req.session.oldUrl;
+    const oldUrl = req.session.oldUrl;
     req.session.oldUrl = null;
     res.redirect(oldUrl);
   }
@@ -71,17 +86,3 @@ router.post('/signin', passport.authenticate('local.signin', {
 });
 
 module.exports = router;
-
-function isLoggedIn(req, res, next) {
-  if(req.isAuthenticated()) {
-    return next();
-  }
-  res.redirect('/');
-}
-
-function notLoggedIn(req, res, next) {
-  if(!req.isAuthenticated()) {
-    return next();
-  }
-  res.redirect('/');
-}

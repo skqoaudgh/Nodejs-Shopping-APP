@@ -36,7 +36,8 @@ form.addEventListener('submit', function(event) {
     var btn = document.getElementById('btn');
     var name = document.getElementById('name');
     var address = document.getElementById('address');
-    btn.disabled = 'disabled';
+
+    btn.disabled = true;
 
     stripe.createToken(card, {
       name: name.value,
@@ -46,9 +47,11 @@ form.addEventListener('submit', function(event) {
             // Inform the customer that there was an error.
             var errorElement = document.getElementById('charge-error');
             errorElement.textContent = result.error.message;
+            btn.disabled = false;
         } else {
             // Send the token to your server.
             stripeTokenHandler(result.token);
+            btn.disabled = true;
         }
     });
 });
