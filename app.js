@@ -1,21 +1,22 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var expressHbs = require('express-handlebars');
-var mongoose = require('mongoose');
-var session = require('express-session');
-var passport = require('passport');
-var flash = require('connect-flash');
-var validator = require('express-validator');
-var MongoStore = require('connect-mongo')(session);
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const expressHbs = require('express-handlebars');
+const mongoose = require('mongoose');
+const session = require('express-session');
+const passport = require('passport');
+const flash = require('connect-flash');
+const validator = require('express-validator');
+const MongoStore = require('connect-mongo')(session);
 
-var indexRouter = require('./routes/index');
-var userRouter = require('./routes/users');
-var checkoutRouter = require('./routes/checkout');
+const indexRouter = require('./routes/index');
+const userRouter = require('./routes/users');
+const checkoutRouter = require('./routes/checkout');
+const shoppingRouter = require('./routes/shopping');
 
-var app = express();
+const app = express();
 
 mongoose.connect('mongodb+srv://Cada:asd123@node-rest-shop-zqnku.mongodb.net/shopping-cart?retryWrites=true&w=majority',
   { useNewUrlParser: true });
@@ -50,6 +51,7 @@ app.use(function(req, res, next) {
 
 app.use('/user', userRouter);
 app.use('/checkout', checkoutRouter);
+app.use('/shopping', shoppingRouter);
 app.use('/', indexRouter);
 
 // catch 404 and forward to error handler

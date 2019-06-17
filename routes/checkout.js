@@ -4,9 +4,17 @@ const router = express.Router();
 const Order = require('../models/order');
 const Cart = require('../models/cart');
 
+isLoggedIn = (req, res, next) => {
+    if(req.isAuthenticated()) {
+        return next();
+    }
+    req.session.oldUrl = req.url;
+    res.redirect('/user/signin');
+}
+
 router.get('/', isLoggedIn, (req, res, next) => {
     if(!req.session.cart) {
-      return res.redirect('/shopping-cart');
+      return res.redirect('/shopping');
     }
     const cart = new Cart(req.session.cart);
     const errMsg = req.flash('error')[0];
@@ -16,9 +24,8 @@ router.get('/', isLoggedIn, (req, res, next) => {
   
 router.post('/', isLoggedIn, async (req, res, next) => {
     if(!req.session.cart) {
-        return res.redirect('/shopping-cart');
+        return res.redirect('/cart');
     }
-    console.log(1);
 
     const cart = new Cart(req.session.cart);
     const stripe = require('stripe')('sk_test_APKRsqZ3qyn9Hqsf5wkOz6A3006JMtLXVt');
